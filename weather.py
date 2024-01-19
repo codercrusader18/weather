@@ -28,7 +28,8 @@ def weather(city,country):
 		print("\nPressure :"+str(pressure))
 		print("\nDescription :"+description)
 	
-	
+	else :
+		print(f"\nError : {data['message']}")
 
 
 city = input("\nEnter the name of the city :")
