@@ -1,37 +1,68 @@
 import requests
+import os
+import sys
+from dotenv import load_dotenv
+
 
 def weather(city,country):
+	load_dotenv()  
+	api_key = os.environ.get('OPENWEATHER_API_KEY')
+	
+	if not api_key :
+		print("\n ERROR: OPENWEATHER_API_KEY environment variable not set.")
+		print("Please set this variable and try again.")
+		sys.exit(1)
+
 	base_url = "http://api.openweathermap.org/data/2.5/weather"
-	api_key = '41261d6f6cbd2eb9e9aa96c6c1dd7e98'
-	
 	params = {"q": f"{city},{country}", "appid": api_key}
-	response = requests.get(base_url,params = params)
-	data = response.json()
 	
-	if response.status_code == 200 :
+
+	try:
+		response = requests.get(base_url,params = params)
+		response.raise_for_status()
+		data = response.json()
+
 		lat = data['coord']['lat']
 		lon = data['coord']['lon']
-		temperature = data['main']['temp'] - 273.15
-		feels_like = data['main']['feels_like'] - 273.15
-		max_temp = data['main']['temp_max'] - 273.15
-		min_temp = data['main']['temp_min']- 273.15
+		temperature = data['main']['temp']
+		feels_like = data['main']['feels_like']
+		max_temp = data['main']['temp_max']
+		min_temp = data['main']['temp_min']
 		pressure = data['main']['pressure']
+		humidity = data['main']['humidity']
 		description = data['weather'][0]['description']
-		
-		print("\nCity :"+city)
-		print("\nLatitude :"+str(lat))
-		print("\nLongitude :"+str(lon))
-		print("\nTemperature :"+str(temperature)+"°C")
-		print("\nFeels Like :"+str(feels_like)+"°C")
-		print("\nMax temp :"+str(max_temp)+"°C")
-		print("\nMin temp :"+str(min_temp)+"°C")
-		print("\nPressure :"+str(pressure))
-		print("\nDescription :"+description)
+
+		print(f"\nCity: {city}")
+		print(f"Latitude: {lat}")
+		print(f"Longitude: {lon}")
+		print(f"Temperature: {temperature}°C")
+		print(f"Feels Like: {feels_like}°C")
+		print(f"Max temp: {max_temp}°C")
+		print(f"Min temp: {min_temp}°C")
+		print(f"Pressure: {pressure} hPa")
+		print(f"Humidity: {humidity}%")
+		print(f"Description: {description.title()}")
 	
-	else :
-		print(f"\nError : {data['message']}")
+	except requests.exceptions.HTTPError as http_err:
+		if response.status_code == 404:
+			print(f"\nError: City not found. Please check the city and country code.")
+		elif response.status_code == 401:
+			print(f"\nError: Invalid API key. Please check your OPENWEATHER_API_KEY.")
+		else:
+			print(f"\nHTTP error occurred: {http_err}")
+	except request.exception.RequestException as req_err:
+		print(f"\nError: A request error occurred: {req_err}")
+	except KerError:
+		print(f"\nError: Could not parse weather data. The response may be malformed.")
+	except Exception as err:
+		print(f"\nAn unexpected error occured: {err}")
 
 
-city = input("\nEnter the name of the city :")
-country = input("\nEnter the country code :")
-weather(city,country)
+def main():
+	city = input("\nEnter the name of the city: ")
+	country = input("Enter the country code: ")
+	weather(city, country)
+
+
+if __name__ == "__main__":
+	main()
