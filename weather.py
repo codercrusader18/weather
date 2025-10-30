@@ -1,8 +1,11 @@
 import requests
 import os
 import sys
+from dotenv import load_dotenv
+
 
 def weather(city,country):
+	load_dotenv()  
 	api_key = os.environ.get('OPENWEATHER_API_KEY')
 	
 	if not api_key :
