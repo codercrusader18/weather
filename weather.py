@@ -1,4 +1,6 @@
 import requests
+import os
+import sys
 
 def weather(city,country):
 	base_url = "http://api.openweathermap.org/data/2.5/weather"
