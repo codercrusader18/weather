@@ -14,7 +14,7 @@ def weather(city,country):
 		sys.exit(1)
 
 	base_url = "http://api.openweathermap.org/data/2.5/weather"
-	params = {"q": f"{city},{country}", "appid": api_key}
+	params = {"q": f"{city},{country}", "appid": api_key, "units": "metric"}
 	
 
 	try:
@@ -50,9 +50,9 @@ def weather(city,country):
 			print(f"\nError: Invalid API key. Please check your OPENWEATHER_API_KEY.")
 		else:
 			print(f"\nHTTP error occurred: {http_err}")
-	except request.exception.RequestException as req_err:
+	except requests.exception.RequestException as req_err:
 		print(f"\nError: A request error occurred: {req_err}")
-	except KerError:
+	except KeyError:
 		print(f"\nError: Could not parse weather data. The response may be malformed.")
 	except Exception as err:
 		print(f"\nAn unexpected error occured: {err}")
